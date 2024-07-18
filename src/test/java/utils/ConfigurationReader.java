@@ -25,4 +25,8 @@ public class ConfigurationReader {
     public static String get(String keyName) {
         return properties.getProperty(keyName);
     }
+
+    public static String get(String key, String defaultValue) {
+        return properties.getProperty(key, defaultValue);
+    }
 }

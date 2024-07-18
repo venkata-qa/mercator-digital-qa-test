@@ -25,28 +25,28 @@ public class DriverManager {
     public static WebDriver get() {
         if (driver == null) {
             String browser = ConfigurationReader.get("browser");
+            boolean isHeadless = Boolean.parseBoolean(ConfigurationReader.get("headless", "false"));
             logger.info("Browser selected: " + browser);
+            logger.info("Headless mode: " + isHeadless);
             try {
-                switch (browser) {
+                switch (browser.toLowerCase()) {
                     case "chrome":
                         WebDriverManager.chromedriver().setup();
-                        driver = new ChromeDriver();
+                        ChromeOptions chromeOptions = new ChromeOptions();
+                        if (isHeadless) {
+                            chromeOptions.addArguments("--headless");
+                        }
+                        driver = new ChromeDriver(chromeOptions);
                         logger.info("Chrome browser started");
-                        break;
-                    case "chrome-headless":
-                        WebDriverManager.chromedriver().setup();
-                        driver = new ChromeDriver(new ChromeOptions().setHeadless(true));
-                        logger.info("Chrome headless browser started");
                         break;
                     case "firefox":
                         WebDriverManager.firefoxdriver().setup();
-                        driver = new FirefoxDriver();
+                        FirefoxOptions firefoxOptions = new FirefoxOptions();
+                        if (isHeadless) {
+                            firefoxOptions.addArguments("--headless");
+                        }
+                        driver = new FirefoxDriver(firefoxOptions);
                         logger.info("Firefox browser started");
-                        break;
-                    case "firefox-headless":
-                        WebDriverManager.firefoxdriver().setup();
-                        driver = new FirefoxDriver(new FirefoxOptions().setHeadless(true));
-                        logger.info("Firefox headless browser started");
                         break;
                     case "ie":
                         if (!System.getProperty("os.name").toLowerCase().contains("windows"))
@@ -79,7 +79,6 @@ public class DriverManager {
         }
         return driver;
     }
-
     public static void closeDriver() {
         if (driver != null) {
             driver.quit();
